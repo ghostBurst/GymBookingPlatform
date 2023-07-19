@@ -5,7 +5,8 @@ namespace GymBookingPlatform.Data
 {
     public class GymBookingContext : DbContext
     {
-        public GymBookingContext(DbContextOptions<GymBookingContext> options) : base(options)
+        public GymBookingContext(DbContextOptions<GymBookingContext> options)
+            : base(options)
         {
         }
 

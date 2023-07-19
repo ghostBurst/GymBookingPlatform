@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using GymBookingPlatform.Data;
 using GymBookingPlatform.Models;
 
@@ -20,86 +16,31 @@ namespace GymBookingPlatform.Controllers
             _context = context;
         }
 
-        // GET: api/Gyms
+        // GET: api/Gyms?location={location}&activities={activities}
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Gym>>> GetGyms()
+        public ActionResult<IEnumerable<Gym>> GetGyms(string location, string activities)
         {
-            return await _context.Gyms.ToListAsync();
-        }
+            var gyms = _context.Gyms.AsQueryable();
 
-        // GET: api/Gyms/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Gym>> GetGym(int id)
-        {
-            var gym = await _context.Gyms.FindAsync(id);
-
-            if (gym == null)
+            if (!string.IsNullOrEmpty(location))
             {
-                return NotFound();
+                gyms = gyms.Where(g => g.Location == location);
             }
 
-            return gym;
-        }
-
-        // PUT: api/Gyms/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutGym(int id, Gym gym)
-        {
-            if (id != gym.Id)
+            if (!string.IsNullOrEmpty(activities))
             {
-                return BadRequest();
+                gyms = gyms.Where(g => g.Activities.Contains(activities));
             }
 
-            _context.Entry(gym).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!GymExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            return gyms.ToList();
         }
 
-        // POST: api/Gyms
-        [HttpPost]
-        public async Task<ActionResult<Gym>> PostGym(Gym gym)
+        // GET: api/Gyms/{id}/availability?date={date}&time={time}
+        [HttpGet("{id}/availability")]
+        public ActionResult<bool> CheckAvailability(int id, string date, string time)
         {
-            _context.Gyms.Add(gym);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetGym", new { id = gym.Id }, gym);
-        }
-
-        // DELETE: api/Gyms/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteGym(int id)
-        {
-            var gym = await _context.Gyms.FindAsync(id);
-            if (gym == null)
-            {
-                return NotFound();
-            }
-
-            _context.Gyms.Remove(gym);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool GymExists(int id)
-        {
-            return _context.Gyms.Any(e => e.Id == id);
+            // This is a placeholder. You'll need to replace this with your actual logic for checking availability.
+            return true;
         }
     }
 }

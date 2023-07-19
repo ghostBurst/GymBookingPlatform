@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using GymBookingPlatform.Data;
 using GymBookingPlatform.Models;
 
@@ -20,18 +16,21 @@ namespace GymBookingPlatform.Controllers
             _context = context;
         }
 
-        // GET: api/Bookings
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Booking>>> GetBookings()
+        // POST: api/Bookings
+        [HttpPost]
+        public ActionResult<Booking> CreateBooking(Booking booking)
         {
-            return await _context.Bookings.ToListAsync();
+            _context.Bookings.Add(booking);
+            _context.SaveChanges();
+
+            return CreatedAtAction(nameof(GetBooking), new { id = booking.Id }, booking);
         }
 
-        // GET: api/Bookings/5
+        // GET: api/Bookings/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<Booking>> GetBooking(int id)
+        public ActionResult<Booking> GetBooking(int id)
         {
-            var booking = await _context.Bookings.FindAsync(id);
+            var booking = _context.Bookings.Find(id);
 
             if (booking == null)
             {
@@ -41,65 +40,29 @@ namespace GymBookingPlatform.Controllers
             return booking;
         }
 
-        // PUT: api/Bookings/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutBooking(int id, Booking booking)
+        // PUT: api/Bookings/{id}/cancel
+        [HttpPut("{id}/cancel")]
+        public IActionResult CancelBooking(int id)
         {
-            if (id != booking.Id)
-            {
-                return BadRequest();
-            }
+            var booking = _context.Bookings.Find(id);
 
-            _context.Entry(booking).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BookingExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Bookings
-        [HttpPost]
-        public async Task<ActionResult<Booking>> PostBooking(Booking booking)
-        {
-            _context.Bookings.Add(booking);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetBooking", new { id = booking.Id }, booking);
-        }
-
-        // DELETE: api/Bookings/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBooking(int id)
-        {
-            var booking = await _context.Bookings.FindAsync(id);
             if (booking == null)
             {
                 return NotFound();
             }
 
-            _context.Bookings.Remove(booking);
-            await _context.SaveChangesAsync();
+            booking.IsCancelled = true;
+            _context.Bookings.Update(booking);
+            _context.SaveChanges();
 
             return NoContent();
         }
 
-        private bool BookingExists(int id)
+        // GET: api/Bookings/user/{userId}
+        [HttpGet("user/{userId}")]
+        public ActionResult<IEnumerable<Booking>> GetUserBookings(int userId)
         {
-            return _context.Bookings.Any(e => e.Id == id);
+            return _context.Bookings.Where(b => b.User.Id == userId).ToList();
         }
     }
 }

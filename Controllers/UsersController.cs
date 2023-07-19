@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using GymBookingPlatform.Data;
 using GymBookingPlatform.Models;
 
@@ -20,18 +16,27 @@ namespace GymBookingPlatform.Controllers
             _context = context;
         }
 
-        // GET: api/Users
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        // POST: api/Users/register
+        [HttpPost("register")]
+        public ActionResult<User> Register(User user)
         {
-            return await _context.Users.ToListAsync();
+            // This is a placeholder. You'll need to replace this with your actual logic for registering a user.
+            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
         }
 
-        // GET: api/Users/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        // POST: api/Users/login
+        [HttpPost("login")]
+        public ActionResult<User> Login(User user)
         {
-            var user = await _context.Users.FindAsync(id);
+            // This is a placeholder. You'll need to replace this with your actual logic for logging in a user.
+            return user;
+        }
+
+        // GET: api/Users/{id}
+        [HttpGet("{id}")]
+        public ActionResult<User> GetUser(int id)
+        {
+            var user = _context.Users.Find(id);
 
             if (user == null)
             {
@@ -39,67 +44,6 @@ namespace GymBookingPlatform.Controllers
             }
 
             return user;
-        }
-
-        // PUT: api/Users/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
-        {
-            if (id != user.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(user).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Users
-        [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
-        {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
-        }
-
-        // DELETE: api/Users/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
-        {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool UserExists(int id)
-        {
-            return _context.Users.Any(e => e.Id == id);
         }
     }
 }
