@@ -5,6 +5,8 @@ VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GymBookingPlatform", "GymBookingPlatform.csproj", "{8B19B469-AB3B-4556-840D-94476AD54D66}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorApp2", "..\BlazorApp2\BlazorApp2.csproj", "{824AA8BF-3458-44CF-AE81-137E9FAFBB52}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{8B19B469-AB3B-4556-840D-94476AD54D66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B19B469-AB3B-4556-840D-94476AD54D66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B19B469-AB3B-4556-840D-94476AD54D66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{824AA8BF-3458-44CF-AE81-137E9FAFBB52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{824AA8BF-3458-44CF-AE81-137E9FAFBB52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{824AA8BF-3458-44CF-AE81-137E9FAFBB52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{824AA8BF-3458-44CF-AE81-137E9FAFBB52}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
