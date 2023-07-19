@@ -1,12 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using GymBookingPlatform.Data;
 using GymBookingPlatform.Models;
-using System.Linq;
 
 namespace GymBookingPlatform.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("[controller]")]
     public class GymsController : ControllerBase
     {
         private readonly GymBookingContext _context;
@@ -16,48 +20,86 @@ namespace GymBookingPlatform.Controllers
             _context = context;
         }
 
+        // GET: api/Gyms
         [HttpGet]
-        public IActionResult Get()
+        public async Task<ActionResult<IEnumerable<Gym>>> GetGyms()
         {
-            var gyms = _context.Gyms.ToList();
-            return Ok(gyms);
-        }
-        [HttpPost]
-        public IActionResult Post([FromBody] Gym gym)
-        {
-            _context.Gyms.Add(gym);
-            _context.SaveChanges();
-            return Ok(gym);
+            return await _context.Gyms.ToListAsync();
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] Gym gym)
+        // GET: api/Gyms/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Gym>> GetGym(int id)
         {
-            var existingGym = _context.Gyms.Find(id);
-            if (existingGym == null)
+            var gym = await _context.Gyms.FindAsync(id);
+
+            if (gym == null)
             {
                 return NotFound();
             }
 
-            existingGym.Name = gym.Name;
-            existingGym.Location = gym.Location;
-            _context.SaveChanges();
-            return Ok(existingGym);
+            return gym;
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        // PUT: api/Gyms/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutGym(int id, Gym gym)
         {
-            var gym = _context.Gyms.Find(id);
+            if (id != gym.Id)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(gym).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!GymExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        // POST: api/Gyms
+        [HttpPost]
+        public async Task<ActionResult<Gym>> PostGym(Gym gym)
+        {
+            _context.Gyms.Add(gym);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetGym", new { id = gym.Id }, gym);
+        }
+
+        // DELETE: api/Gyms/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteGym(int id)
+        {
+            var gym = await _context.Gyms.FindAsync(id);
             if (gym == null)
             {
                 return NotFound();
             }
 
             _context.Gyms.Remove(gym);
-            _context.SaveChanges();
-            return Ok(gym);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
 
+        private bool GymExists(int id)
+        {
+            return _context.Gyms.Any(e => e.Id == id);
+        }
     }
 }
